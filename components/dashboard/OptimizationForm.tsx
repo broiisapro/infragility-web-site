@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Send, Github, Globe, Target, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { submitOptimizationRequest } from "@/lib/api-client";
 
 type FormData = {
   repositoryUrl: string;
@@ -49,18 +50,18 @@ export default function OptimizationForm() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    console.log("Form submitted:", formData);
-    setIsSubmitting(false);
-    setSubmitted(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData(initialFormData);
-    }, 3000);
+    try {
+      await submitOptimizationRequest(formData);
+    } catch (error) {
+      console.error("Failed to submit optimization request:", error);
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData(initialFormData);
+      }, 3000);
+    }
   };
 
   const handleInputChange = (
